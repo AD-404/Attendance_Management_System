@@ -1,0 +1,944 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Attendance Management System - Army Public School No.1, Roorkee</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #026670, #9FEDD7, #FEF9C7, #FCE181, #EDEAE5);
+            background-attachment: fixed;
+            color: #000000;
+            margin: 0;
+            padding: 0;
+            transition: all 0.3s ease;
+            min-height: 100vh;
+        }
+        body.dark-mode {
+            background: linear-gradient(135deg, #1a1a1a, #333, #555, #777, #999);
+            color: #ffffff;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        header {
+            text-align: center;
+            background: linear-gradient(135deg, #026670, #9FEDD7);
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        body.dark-mode header {
+            background: linear-gradient(135deg, #333, #555);
+        }
+        header h1 {
+            margin: 0;
+            font-size: 3em;
+            color: #000000;
+            text-shadow: 0 0 10px rgba(0,0,0,0.1);
+            font-weight: 700;
+        }
+        body.dark-mode header h1 {
+            color: #ffffff;
+        }
+        header h2 {
+            margin: 10px 0 0 0;
+            font-size: 1.5em;
+            color: #000000;
+        }
+        body.dark-mode header h2 {
+            color: #ffffff;
+        }
+        nav {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        nav button {
+            background: linear-gradient(135deg, #9FEDD7, #FEF9C7);
+            color: #000000;
+            border: none;
+            padding: 12px 25px;
+            margin: 5px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        body.dark-mode nav button {
+            background: linear-gradient(135deg, #555, #777);
+            color: #ffffff;
+        }
+        nav button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+        }
+        nav button.active {
+            background: linear-gradient(135deg, #FCE181, #026670);
+            box-shadow: 0 0 20px rgba(2,102,112,0.3);
+        }
+        body.dark-mode nav button.active {
+            background: linear-gradient(135deg, #777, #333);
+        }
+        .section {
+            display: none;
+            background: rgba(255,255,255,0.8);
+            backdrop-filter: blur(10px);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            animation: fadeIn 0.5s ease;
+            border: 1px solid rgba(0,0,0,0.1);
+            color: #000000;
+        }
+        body.dark-mode .section {
+            background: rgba(0,0,0,0.8);
+            color: #ffffff;
+        }
+        .section.active {
+            display: block;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px) scale(0.95); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        .dashboard {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        .card {
+            background: rgba(255,255,255,0.9);
+            padding: 20px;
+            border-radius: 15px;
+            flex: 1;
+            min-width: 250px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 1px solid rgba(0,0,0,0.1);
+            color: #000000;
+        }
+        body.dark-mode .card {
+            background: rgba(0,0,0,0.9);
+            color: #ffffff;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+        .card h4 {
+            margin: 0 0 15px 0;
+            color: #026670;
+            font-size: 1.2em;
+        }
+        body.dark-mode .card h4 {
+            color: #9FEDD7;
+        }
+        .progress-bar {
+            background: rgba(0,0,0,0.1);
+            border-radius: 10px;
+            height: 25px;
+            margin-top: 10px;
+            overflow: hidden;
+        }
+        body.dark-mode .progress-bar {
+            background: rgba(255,255,255,0.1);
+        }
+        .progress-fill {
+            background: linear-gradient(90deg, #9FEDD7, #FCE181);
+            height: 100%;
+            border-radius: 10px;
+            transition: width 0.5s ease;
+            box-shadow: 0 0 10px rgba(159,237,215,0.5);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background: rgba(255,255,255,0.8);
+            border-radius: 10px;
+            overflow: hidden;
+            color: #000000;
+        }
+        body.dark-mode table {
+            background: rgba(0,0,0,0.8);
+            color: #ffffff;
+        }
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+        }
+        body.dark-mode th, body.dark-mode td {
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        th {
+            background: linear-gradient(135deg, #026670, #9FEDD7);
+            color: #000000;
+            font-weight: 600;
+        }
+        body.dark-mode th {
+            background: linear-gradient(135deg, #333, #555);
+            color: #ffffff;
+        }
+        tr:hover {
+            background: rgba(255,255,255,0.5);
+        }
+        body.dark-mode tr:hover {
+            background: rgba(0,0,0,0.5);
+        }
+        input, select, button {
+            padding: 12px;
+            margin: 5px;
+            border: 1px solid rgba(0,0,0,0.2);
+            border-radius: 8px;
+            background: rgba(255,255,255,0.9);
+            color: #000000;
+            font-size: 1em;
+        }
+        body.dark-mode input, body.dark-mode select, body.dark-mode button {
+            background: rgba(0,0,0,0.9);
+            color: #ffffff;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        input:invalid {
+            border-color: red;
+        }
+        button {
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+        button:hover {
+            background: linear-gradient(135deg, #FEF9C7, #FCE181);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        body.dark-mode button:hover {
+            background: linear-gradient(135deg, #777, #999);
+        }
+        .auth {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #000000;
+        }
+        body.dark-mode .auth {
+            color: #ffffff;
+        }
+        .auth input {
+            width: 250px;
+        }
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #026670;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            z-index: 1000;
+        }
+        .toast.error {
+            background: #d9534f;
+        }
+        .toast.show {
+            opacity: 1;
+        }
+        .search-bar {
+            margin-bottom: 10px;
+        }
+        .search-bar input {
+            width: 100%;
+            max-width: 300px;
+        }
+        .empty-state {
+            text-align: center;
+            padding: 50px;
+            color: #666;
+        }
+        body.dark-mode .empty-state {
+            color: #ccc;
+        }
+        .low-attendance {
+            background-color: #ffe6e6 !important;
+        }
+        body.dark-mode .low-attendance {
+            background-color: #4d0000 !important;
+        }
+        .settings {
+            margin-bottom: 20px;
+        }
+        .settings label {
+            margin-right: 10px;
+        }
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 2.5em;
+            }
+            nav {
+                flex-direction: column;
+            }
+            .dashboard {
+                flex-direction: column;
+            }
+            .card {
+                min-width: unset;
+            }
+            table {
+                font-size: 0.9em;
+            }
+        }
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            #reports, #reports * {
+                visibility: visible;
+            }
+            #reports {
+                position: absolute;
+                left: 0;
+                top: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Army Public School No.1, Roorkee</h1>
+            <h2>Attendance Management System</h2>
+            <button id="theme-toggle" style="position: absolute; top: 10px; right: 10px; background: none; border: none; font-size: 1.5em; cursor: pointer;">🌙</button>
+        </header>
+        <div class="auth" id="auth-section">
+            <input type="password" id="password" placeholder="Enter Teacher Password" required aria-label="Password input">
+            <button onclick="authenticate()">Login</button>
+            <button onclick="logout()" style="display: none;" id="logout-btn">Logout</button>
+            <p id="auth-status"></p>
+        </div>
+        <nav id="nav-section" style="display: none;">
+            <button class="nav-btn active" data-section="dashboard">Dashboard</button>
+            <button class="nav-btn" data-section="students">Manage Students</button>
+            <button class="nav-btn" data-section="attendance">Mark Attendance</button>
+            <button class="nav-btn" data-section="reports">Reports</button>
+            <button class="nav-btn" data-section="settings">Settings</button>
+        </nav>
+        <div id="dashboard" class="section active">
+            <h3>Dashboard</h3>
+            <div class="dashboard">
+                <div class="card">
+                    <h4>Total Students</h4>
+                    <p id="total-students">0</p>
+                </div>
+                <div class="card">
+                    <h4>Today's Summary</h4>
+                    <p>Present: <span id="today-present">0</span></p>
+                    <p>Absent: <span id="today-absent">0</span></p>
+                    <p>Late: <span id="today-late">0</span></p>
+                    <p>Excused: <span id="today-excused">0</span></p>
+                </div>
+                <div class="card">
+                    <h4>Today's Attendance %</h4>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="overall-percentage" style="width: 0%"></div>
+                    </div>
+                    <p id="overall-percent-text">0%</p>
+                </div>
+            </div>
+        </div>
+        <div id="students" class="section">
+            <h3>Manage Students</h3>
+            <input type="text" id="roll-number" placeholder="Roll Number (numeric)" pattern="[0-9]+" required aria-label="Roll number input">
+            <input type="text" id="student-name" placeholder="Student Name" required aria-label="Student name input">
+            <select id="student-class" required>
+                <option value="">Select Class</option>
+                <option value="6">Class 6</option>
+                <option value="7">Class 7</option>
+                <option value="8">Class 8</option>
+                <option value="9">Class 9</option>
+                <option value="10">Class 10</option>
+                <option value="11">Class 11</option>
+                <option value="12">Class 12</option>
+            </select>
+            <select id="student-section" required>
+                <option value="">Select Section</option>
+                <option value="A">A</option>
+                <option value="B">B</option>
+                <option value="C">C</option>
+                <option value="D">D</option>
+                <option value="E">E</option>
+                <option value="F">F</option>
+            </select>
+            <button onclick="addStudent()">Add Student</button>
+            <button onclick="resetSession()">Reset for New Session</button>
+            <button onclick="exportData()">Export Data</button>
+            <input type="file" id="import-file" accept=".json" style="display: none;">
+            <button onclick="document.getElementById('import-file').click()">Import Data</button>
+            <div class="search-bar">
+                <input type="text" id="student-search" placeholder="Search students..." onkeyup="filterTable('student-table', this.value)">
+            </div>
+            <table id="student-table">
+                <thead>
+                    <tr>
+                        <th>Roll Number</th>
+                        <th>Name</th>
+                        <th>Class</th>
+                        <th>Section</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+            <div id="student-empty-state" class="empty-state" style="display: none;">No students added yet. Add some students to get started!</div>
+        </div>
+        <div id="attendance" class="section">
+            <h3>Mark Attendance</h3>
+            <input type="date" id="attendance-date" max="">
+            <select id="attendance-class" onchange="filterAttendanceByClass()">
+                <option value="">All Classes</option>
+                <option value="6">Class 6</option>
+                <option value="7">Class 7</option>
+                <option value="8">Class 8</option>
+                <option value="9">Class 9</option>
+                <option value="10">Class 10</option>
+                <option value="11">Class 11</option>
+                <option value="12">Class 12</option>
+            </select>
+            <select id="attendance-section" onchange="filterAttendanceByClass()">
+                <option value="">All Sections</option>
+                <option value="A">A</option>
+                <option value="B">B</option>
+                <option value="C">C</option>
+                <option value="D">D</option>
+                <option value="E">E</option>
+                <option value="F">F</option>
+            </select>
+            <button onclick="bulkMark('Present')">Bulk Mark All Present</button>
+            <button onclick="bulkMark('Absent')">Bulk Mark All Absent</button>
+            <div class="search-bar">
+                <input type="text" id="attendance-search" placeholder="Search students..." onkeyup="filterTable('attendance-table', this.value)">
+            </div>
+            <table id="attendance-table">
+                <thead>
+                    <tr>
+                        <th>Roll Number</th>
+                        <th>Name</th>
+                        <th>Class</th>
+                        <th>Section</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+            <div id="attendance-empty-state" class="empty-state" style="display: none;">No students in selected class/section or no students added.</div>
+        </div>
+        <div id="reports" class="section">
+            <h3>Monthly Attendance Report</h3>
+            <select id="report-month">
+                <option value="01">January</option>
+                <option value="02">February</option>
+                <option value="03">March</option>
+                <option value="04">April</option>
+                <option value="05">May</option>
+                <option value="06">June</option>
+                <option value="07">July</option>
+                <option value="08">August</option>
+                <option value="09">September</option>
+                <option value="10">October</option>
+                <option value="11">November</option>
+                <option value="12">December</option>
+            </select>
+            <select id="report-year">
+                <option value="2023">2023</option>
+                <option value="2024">2024</option>
+                <option value="2025">2025</option>
+                <option value="2026">2026</option>
+                <option value="2027">2027</option>
+                <option value="2028">2028</option>
+            </select>
+            <select id="report-class">
+                <option value="">All Classes</option>
+                <option value="6">Class 6</option>
+                <option value="7">Class 7</option>
+                <option value="8">Class 8</option>
+                <option value="9">Class 9</option>
+                <option value="10">Class 10</option>
+                <option value="11">Class 11</option>
+                <option value="12">Class 12</option>
+            </select>
+            <select id="report-section">
+                <option value="">All Sections</option>
+                                <option value="A">A</option>
+                <option value="B">B</option>
+                <option value="C">C</option>
+                <option value="D">D</option>
+                <option value="E">E</option>
+                <option value="F">F</option>
+            </select>
+            <button onclick="generateReport()">Generate Report</button>
+            <button onclick="downloadCSV()">Download CSV</button>
+            <button onclick="printReport()">Print Report</button>
+            <div class="search-bar">
+                <input type="text" id="report-search" placeholder="Search reports..." onkeyup="filterTable('report-table', this.value)">
+            </div>
+            <table id="report-table">
+                <thead>
+                    <tr>
+                        <th>Roll Number</th>
+                        <th>Name</th>
+                        <th>Class</th>
+                        <th>Section</th>
+                        <th>Working Days</th>
+                        <th>Present Days</th>
+                        <th>Percentage</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+            <div id="report-empty-state" class="empty-state" style="display: none;">No reports generated yet. Select a month and generate a report!</div>
+        </div>
+        <div id="settings" class="section">
+            <h3>Settings</h3>
+            <div class="settings">
+                <label for="late-threshold">Late Threshold (minutes):</label>
+                <input type="number" id="late-threshold" min="0" value="15">
+                <button onclick="saveSettings()">Save Settings</button>
+            </div>
+            <div class="settings">
+                <label for="low-attendance-threshold">Low Attendance Threshold (%):</label>
+                <input type="number" id="low-attendance-threshold" min="0" max="100" value="75">
+                <button onclick="saveSettings()">Save Settings</button>
+            </div>
+            <div class="settings">
+                <button onclick="backupData()">Backup Data Now</button>
+                <p id="last-backup">Last backup: Never</p>
+            </div>
+        </div>
+    </div>
+    <div id="toast" class="toast"></div>
+    <script>
+        
+        let students = [];
+        let attendance = {};
+        let isAuthenticated = false;
+        let loginAttempts = 0;
+        const maxLoginAttempts = 3;
+        let autoLogoutTimer;
+        const autoLogoutTime = 30 * 60 * 1000; 
+        let settings = {
+            lateThreshold: 15,
+            lowAttendanceThreshold: 75
+        };
+        let lastBackup = localStorage.getItem('lastBackup') || 'Never';
+
+        
+        function showToast(message, type = 'info') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = 'toast';
+            if (type === 'error') toast.classList.add('error');
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+
+        function hashPassword(password) {
+            
+            return btoa(password).split('').reverse().join('');
+        }
+
+        function authenticate() {
+            if (loginAttempts >= maxLoginAttempts) {
+                showToast('Too many failed attempts. Try again later.', 'error');
+                return;
+            }
+            const input = document.getElementById('password').value.trim();
+            const storedHash = localStorage.getItem('teacherPassword') || hashPassword('hellothere!'); 
+            if (hashPassword(input) === storedHash) {
+                isAuthenticated = true;
+                loginAttempts = 0;
+                document.getElementById('auth-status').textContent = 'Authenticated';
+                document.getElementById('auth-section').querySelector('button').style.display = 'none';
+                document.getElementById('logout-btn').style.display = 'inline';
+                document.getElementById('nav-section').style.display = 'flex';
+                loadData();
+                updateUI();
+                startAutoLogout();
+                showToast('Login successful');
+            } else {
+                loginAttempts++;
+                showToast(`Invalid password. Attempts left: ${maxLoginAttempts - loginAttempts}`, 'error');
+            }
+        }
+
+        function logout() {
+            isAuthenticated = false;
+            clearTimeout(autoLogoutTimer);
+            document.getElementById('auth-status').textContent = '';
+            document.getElementById('auth-section').querySelector('button').style.display = 'inline';
+            document.getElementById('logout-btn').style.display = 'none';
+            document.getElementById('nav-section').style.display = 'none';
+            document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
+            document.getElementById('dashboard').classList.add('active');
+            showToast('Logged out');
+        }
+
+        function startAutoLogout() {
+            clearTimeout(autoLogoutTimer);
+            autoLogoutTimer = setTimeout(() => {
+                logout();
+                showToast('Auto-logged out due to inactivity', 'error');
+            }, autoLogoutTime);
+        }
+
+        function resetAutoLogout() {
+            if (isAuthenticated) startAutoLogout();
+        }
+
+        function loadData() {
+            try {
+                students = JSON.parse(localStorage.getItem('students')) || [];
+                attendance = JSON.parse(localStorage.getItem('attendance')) || {};
+                settings = JSON.parse(localStorage.getItem('settings')) || settings;
+                document.getElementById('late-threshold').value = settings.lateThreshold;
+                document.getElementById('low-attendance-threshold').value = settings.lowAttendanceThreshold;
+                document.getElementById('last-backup').textContent = `Last backup: ${lastBackup}`;
+            } catch (e) {
+                showToast('Error loading data', 'error');
+            }
+        }
+
+        function saveData() {
+            try {
+                localStorage.setItem('students', JSON.stringify(students));
+                localStorage.setItem('attendance', JSON.stringify(attendance));
+                localStorage.setItem('settings', JSON.stringify(settings));
+            } catch (e) {
+                showToast('Error saving data', 'error');
+            }
+        }
+
+        function updateUI() {
+            document.getElementById('total-students').textContent = students.length;
+            updateDashboard();
+            renderStudents();
+            renderAttendance();
+            checkEmptyStates();
+        }
+
+        function updateDashboard() {
+            const today = new Date().toISOString().split('T')[0];
+            const todayData = attendance[today] || {};
+            let present = 0, absent = 0, late = 0, excused = 0;
+            students.forEach(student => {
+                const status = todayData[student.roll];
+                if (status === 'Present') present++;
+                else if (status === 'Absent') absent++;
+                else if (status === 'Late') late++;
+                else if (status === 'Excused') excused++;
+            });
+            document.getElementById('today-present').textContent = present;
+            document.getElementById('today-absent').textContent = absent;
+            document.getElementById('today-late').textContent = late;
+            document.getElementById('today-excused').textContent = excused;
+            const total = students.length;
+            const overallPercent = total > 0 ? ((present + late * 0.5) / total * 100).toFixed(1) : 0; 
+            document.getElementById('overall-percentage').style.width = overallPercent + '%';
+            document.getElementById('overall-percent-text').textContent = overallPercent + '%';
+        }
+
+        function addStudent() {
+            if (!isAuthenticated) return showToast('Please authenticate first', 'error');
+            const roll = document.getElementById('roll-number').value.trim();
+            const name = document.getElementById('student-name').value.trim();
+            const cls = document.getElementById('student-class').value;
+            const section = document.getElementById('student-section').value;
+            if (!roll || !name || !cls || !section || isNaN(roll)) return showToast('Fill all fields correctly (roll must be numeric)', 'error');
+            if (students.find(s => s.roll === roll)) return showToast('Duplicate roll number', 'error');
+            students.push({ roll, name, class: cls, section });
+            saveData();
+            updateUI();
+            document.getElementById('roll-number').value = '';
+            document.getElementById('student-name').value = '';
+            document.getElementById('student-class').value = '';
+            document.getElementById('student-section').value = '';
+            showToast('Student added successfully');
+        }
+
+        function removeStudent(roll) {
+            if (!isAuthenticated) return showToast('Please authenticate first', 'error');
+            students = students.filter(s => s.roll !== roll);
+            saveData();
+            updateUI();
+            showToast('Student removed');
+        }
+
+        function renderStudents() {
+            const tbody = document.querySelector('#student-table tbody');
+            tbody.innerHTML = '';
+            students.forEach(student => {
+                const row = `<tr>
+                    <td>${student.roll}</td>
+                    <td>${student.name}</td>
+                    <td>${student.class}</td>
+                    <td>${student.section}</td>
+                    <td><button onclick="removeStudent('${student.roll}')">Remove</button></td>
+                </tr>`;
+                tbody.innerHTML += row;
+            });
+        }
+
+        function renderAttendance() {
+            const date = document.getElementById('attendance-date').value;
+            const cls = document.getElementById('attendance-class').value;
+            const section = document.getElementById('attendance-section').value;
+            const tbody = document.querySelector('#attendance-table tbody');
+            tbody.innerHTML = '';
+            const filteredStudents = students.filter(s => (!cls || s.class === cls) && (!section || s.section === section));
+            filteredStudents.forEach(student => {
+                const status = attendance[date] ? attendance[date][student.roll] || '' : '';
+                const row = `<tr>
+                    <td>${student.roll}</td>
+                    <td>${student.name}</td>
+                    <td>${student.class}</td>
+                    <td>${student.section}</td>
+                    <td>
+                        <select onchange="markAttendance('${student.roll}', this.value)">
+                            <option value="">Select</option>
+                            <option value="Present" ${status === 'Present' ? 'selected' : ''}>Present</option>
+                            <option value="Absent" ${status === 'Absent' ? 'selected' : ''}>Absent</option>
+                            <option value="Late" ${status === 'Late' ? 'selected' : ''}>Late</option>
+                            <option value="Excused" ${status === 'Excused' ? 'selected' : ''}>Excused</option>
+                        </select>
+                    </td>
+                </tr>`;
+                tbody.innerHTML += row;
+            });
+        }
+
+        function markAttendance(roll, status) {
+            if (!isAuthenticated) return showToast('Please authenticate first', 'error');
+            if (!status) return;
+            const date = document.getElementById('attendance-date').value;
+            const today = new Date().toISOString().split('T')[0];
+            if (date > today) return showToast('Cannot mark attendance for future dates', 'error');
+            if (!attendance[date]) attendance[date] = {};
+            attendance[date][roll] = status;
+            saveData();
+            updateUI();
+            resetAutoLogout();
+        }
+
+        function bulkMark(status) {
+            if (!isAuthenticated) return showToast('Please authenticate first', 'error');
+            const date = document.getElementById('attendance-date').value;
+            const today = new Date().toISOString().split('T')[0];
+            if (date > today) return showToast('Cannot mark attendance for future dates', 'error');
+            if (!confirm(`Mark all as ${status}?`)) return;
+            if (!attendance[date]) attendance[date] = {};
+            const cls = document.getElementById('attendance-class').value;
+            const section = document.getElementById('attendance-section').value;
+            students.filter(s => (!cls || s.class === cls) && (!section || s.section === section)).forEach(student => {
+                attendance[date][student.roll] = status;
+            });
+            saveData();
+            updateUI();
+            showToast(`All marked as ${status}`);
+            resetAutoLogout();
+        }
+
+        function filterAttendanceByClass() {
+            renderAttendance();
+        }
+
+        function filterTable(tableId, query) {
+            const tbody = document.querySelector(`#${tableId} tbody`);
+            const rows = tbody.querySelectorAll('tr');
+            query = query.toLowerCase();
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(query) ? '' : 'none';
+            });
+        }
+
+        function generateReport() {
+            if (students.length === 0) return showToast('Add students first', 'error');
+            const month = document.getElementById('report-month').value;
+            const year = document.getElementById('report-year').value;
+            const cls = document.getElementById('report-class').value;
+            const section = document.getElementById('report-section').value;
+            const tbody = document.querySelector('#report-table tbody');
+            tbody.innerHTML = '';
+            const daysInMonth = new Date(year, month, 0).getDate();
+            let workingDays = 0;
+            for (let d = 1; d <= daysInMonth; d++) {
+                const date = `${year}-${month.padStart(2, '0')}-${d.toString().padStart(2, '0')}`;
+                if (attendance[date]) workingDays++;
+            }
+            const filteredStudents = students.filter(s => (!cls || s.class === cls) && (!section || s.section === section));
+            filteredStudents.forEach(student => {
+                let presentDays = 0;
+                for (let d = 1; d <= daysInMonth; d++) {
+                    const date = `${year}-${month.padStart(2, '0')}-${d.toString().padStart(2, '0')}`;
+                    const status = attendance[date] ? attendance[date][student.roll] : '';
+                    if (status === 'Present' || (status === 'Late' && settings.lateThreshold <= 15)) presentDays += 1; 
+                    else if (status === 'Late') presentDays += 0.5;
+                }
+                const percent = workingDays > 0 ? (presentDays / workingDays * 100).toFixed(1) : 0;
+                const isLow = percent < settings.lowAttendanceThreshold;
+                const row = `<tr class="${isLow ? 'low-attendance' : ''}">
+                    <td>${student.roll}</td>
+                    <td>${student.name}</td>
+                    <td>${student.class}</td>
+                    <td>${student.section}</td>
+                    <td>${workingDays}</td>
+                    <td>${presentDays}</td>
+                    <td>${percent}%</td>
+                </tr>`;
+                tbody.innerHTML += row;
+            });
+            showToast('Report generated');
+            resetAutoLogout();
+        }
+
+        function downloadCSV() {
+            const table = document.getElementById('report-table');
+            let csv = [];
+            for (let row of table.rows) {
+                let cols = [];
+                for (let col of row.cells) {
+                    cols.push('"' + col.innerText + '"');
+                }
+                csv.push(cols.join(','));
+            }
+            const csvContent = csv.join('\n');
+            const blob = new Blob([csvContent], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'attendance_report.csv';
+            a.click();
+            URL.revokeObjectURL(url);
+            showToast('CSV downloaded');
+        }
+
+        function printReport() {
+            window.print();
+        }
+
+        function exportData() {
+            const data = { students, attendance, settings };
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'attendance_data.json';
+            a.click();
+            URL.revokeObjectURL(url);
+            showToast('Data exported');
+        }
+
+        function importData(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    if (!data.students || !data.attendance) throw new Error('Invalid data');
+                    students = data.students || [];
+                    attendance = data.attendance || {};
+                    settings = data.settings || settings;
+                    saveData();
+                    updateUI();
+                    showToast('Data imported successfully');
+                } catch (err) {
+                    showToast('Invalid file format', 'error');
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        function resetSession() {
+            if (!isAuthenticated) return showToast('Please authenticate first', 'error');
+            if (confirm('Reset all data? This cannot be undone.')) {
+                students = [];
+                attendance = {};
+                saveData();
+                updateUI();
+                showToast('Data reset');
+            }
+        }
+
+        function saveSettings() {
+            settings.lateThreshold = parseInt(document.getElementById('late-threshold').value);
+            settings.lowAttendanceThreshold = parseInt(document.getElementById('low-attendance-threshold').value);
+            saveData();
+            showToast('Settings saved');
+        }
+
+        function backupData() {
+            exportData();
+            lastBackup = new Date().toLocaleString();
+            localStorage.setItem('lastBackup', lastBackup);
+            document.getElementById('last-backup').textContent = `Last backup: ${lastBackup}`;
+            showToast('Backup completed');
+        }
+
+        function checkEmptyStates() {
+            document.getElementById('student-empty-state').style.display = students.length === 0 ? 'block' : 'none';
+            const attendanceTable = document.querySelector('#attendance-table tbody');
+            document.getElementById('attendance-empty-state').style.display = attendanceTable.children.length === 0 ? 'block' : 'none';
+            const reportTable = document.querySelector('#report-table tbody');
+            document.getElementById('report-empty-state').style.display = reportTable.children.length === 0 ? 'block' : 'none';
+        }
+
+        function toggleTheme() {
+            document.body.classList.toggle('dark-mode');
+            const themeToggle = document.getElementById('theme-toggle');
+            themeToggle.textContent = document.body.classList.contains('dark-mode') ? '☀️' : '🌙';
+            localStorage.setItem('theme', document.body.classList.contains('dark-mode') ? 'dark' : 'light');
+        }
+
+document.querySelectorAll('.nav-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
+        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById(btn.dataset.section).classList.add('active');
+        btn.classList.add('active');
+        resetAutoLogout();
+    });
+});
+
+        document.getElementById('attendance-date').addEventListener('change', renderAttendance);
+        document.getElementById('import-file').addEventListener('change', importData);
+        document.getElementById('theme-toggle').addEventListener('click', toggleTheme);
+
+        
+        const today = new Date();
+        document.getElementById('attendance-date').value = today.toISOString().split('T')[0];
+        document.getElementById('attendance-date').max = today.toISOString().split('T')[0];
+        document.getElementById('report-month').value = (today.getMonth() + 1).toString().padStart(2, '0');
+        document.getElementById('report-year').value = today.getFullYear().toString();
+
+        
+        if (localStorage.getItem('theme') === 'dark') {
+            document.body.classList.add('dark-mode');
+            document.getElementById('theme-toggle').textContent = '☀️';
+        }
+
+        loadData();
+        updateUI();
+    </script>
+</body>
+</html>
